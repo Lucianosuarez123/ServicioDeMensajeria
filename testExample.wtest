@@ -1,9 +1,40 @@
-import example.pepita
+import mensajes.*
+import usuarios.*
+import chat.*
 
-describe "group of tests for pepita" {
+describe "Wolloksapp" {
 
-  test "pepita has initial energy" {
-    assert.equals(100, pepita.energy())
-  }
+	const alf = new Usuario(memoria = 100, nombre = "Alfredo")
+	const rasta = new Usuario(memoria = 1000, nombre = "Nahuel")
+	const chat = new Chat(participantes = [ alf, rasta ])
+	const mensaje = new Mensaje(contenido = new Texto(elTexto = "Hola"), emisor = alf)
+
+	fixture {
+		alf.agregarChat(chat)
+		rasta.agregarChat(chat)
+		chat.enviar(mensaje)
+	}
+
+	test "Saber el espacio que ocupa un chat" {
+		assert.equals(10.2, chat.espacioOcupado())
+	}
+
+	test "Enviar un mensaje a un chat" {
+		assert.that(chat.mensajes().contains(mensaje))
+	}
+	
+	test "Mensajes mas pesados" {
+		assert.equals([mensaje], alf.mensajesMasPesados())
+	}
+	
+	test "Leer un chat" {
+		rasta.leer(chat)
+		assert.equals(0, rasta.notificacionesSinLeer().size())
+		assert.equals(1, alf.notificacionesSinLeer().size())
+	}
+
+	test "Buscar" {
+		assert.equals([chat], alf.buscar("Hola"))
+	}
 
 }
